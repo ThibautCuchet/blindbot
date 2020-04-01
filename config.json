@@ -1,8 +1,13 @@
 {
   "creatorId": "177834664294088705",
   "prefix": "!",
-  "token": "Njk0MjY0NDI5NDYxNjM1MTkz.XoPRCg.R4ZzdcAgE7oM0-icDNLAtdhvgR4",
-  "sounds": {
-    "adele": "sounds/Adele - Hello.mp3"
+  "token": "Njk0MjY0NDI5NDYxNjM1MTkz.XoSz0Q.rKlDkek2d0ZyWJVGw3EcW56ufNU",
+  "manches": {
+    "manche1": [
+      "sounds/Adele - Hello.mp3",
+      "sounds/ABBA - Mamma Mia.mp3",
+      "sounds/Avicii - Waiting For Love.mp3",
+      "sounds/Daniel Balavoine - Je ne suis pas un heros.mp3"
+    ]
   }
 }
