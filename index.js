@@ -1,11 +1,11 @@
 const Discord = require("discord.js");
-const { creatorId, prefix, token, manches } = require("./config.json");
+const { creatorId, prefix, token, rounds } = require("./config.json");
 
 const client = new Discord.Client();
 let buzzed = false;
-let buzzedUsername = "";
-let currentManche = "";
-let indexManche = 0;
+let buzzedUser = null;
+let currentRound = "";
+let indexRound = 0;
 let voiceConnection = null;
 let dispatcher = null;
 let started = false;
@@ -14,7 +14,7 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on("message", msg => {
+client.on("message", (msg) => {
   if (!msg.content.startsWith(prefix) || msg.author.bot) return;
   const args = msg.content.slice(prefix.length).split(" ");
   const command = args.shift().toLowerCase();
@@ -23,46 +23,42 @@ client.on("message", msg => {
     started = false;
     msg.member.voice.channel
       .join()
-      .then(connection => (voiceConnection = connection));
+      .then((connection) => (voiceConnection = connection));
     muteAll(msg.member.voice.channel);
-    msg.channel.send("La partie commence !");
+    msg.channel.send("The blind test is starting !");
   }
-  if (started && !buzzed && command == "buzz") {
+  if (started && !buzzed && (command == "buzz" || command == "b")) {
     buzzed = true;
-    buzzedUsername = msg.author.username;
+    buzzedUser = msg.member;
     dispatcher.pause();
-    msg.channel.send(`${buzzedUsername} a la parole`);
-    muteAll(msg.member.voice.channel);
+    msg.channel.send(`<@${buzzedUser.id}> it's your turn`);
     msg.member.voice.setMute(false);
   }
   if (started && buzzed && msg.author.id == creatorId && command == "v") {
     buzzed = false;
-    msg.channel.send(`La réponse de ${buzzedUsername} est bonne`);
-    muteAll(msg.member.voice.channel);
+    buzzedUser.voice.setMute(true);
   }
   if (started && buzzed && msg.author.id == creatorId && command == "f") {
     buzzed = false;
+    buzzedUser.voice.setMute(true);
     dispatcher.resume();
-    msg.channel.send(`Remis en jeux`);
-    muteAll(msg.member.voice.channel);
   }
   if (started && msg.author.id == creatorId && command == "n") {
-    dispatcher.pause();
-    console.log(indexManche, manches[currentManche].length);
     buzzed = false;
-    if (indexManche < manches[currentManche].length - 1) {
-      indexManche++;
-      dispatcher = voiceConnection.play(manches[currentManche][indexManche]);
+    dispatcher.pause();
+    buzzed = false;
+    if (indexRound < rounds[currentRound].length - 1) {
+      indexRound++;
+      dispatcher = voiceConnection.play(rounds[currentRound][indexRound]);
     } else {
-      msg.channel.send("La manche est finie");
+      msg.channel.send("It's the end of the round");
       started = false;
-      unmuteAll(msg.member.voice.channel);
     }
   }
   if (started && msg.author.id == creatorId && command == "pause") {
     started = false;
     if (dispatcher != null && !dispatcher.paused) dispatcher.pause();
-    msg.channel.send("Mise en pause !");
+    msg.channel.send("Pause the blind test !");
     unmuteAll(msg.member.voice.channel);
   }
   if (
@@ -74,36 +70,53 @@ client.on("message", msg => {
   ) {
     started = true;
     dispatcher.resume();
-    msg.channel.send("Reprise !");
+    msg.channel.send("Resume !");
     muteAll(msg.member.voice.channel);
   }
   if (!started && msg.author.id == creatorId && command == "play") {
     buzzed = false;
     started = true;
-    currentManche = args[0];
-    dispatcher = voiceConnection.play(manches[currentManche][indexManche]);
-    msg.channel.send("La manche est lancée !");
-    muteAll(msg.member.voice.channel);
+    indexRound = 0;
+    currentRound = args[0];
+    dispatcher = voiceConnection.play(rounds[currentRound][indexRound]);
+    msg.channel.send("The round is starting !");
   }
-  if (started && msg.author.id == creatorId && command == "stop") {
+  if (msg.author.id == creatorId && command == "stop") {
     buzzed = false;
     started = false;
-    msg.channel.send("Fin de la partie !");
+    msg.channel.send("End of the blind test !");
     msg.member.voice.channel.leave();
     unmuteAll(msg.member.voice.channel);
+  }
+  if (msg.author.id == creatorId && command == "m") {
+    buzzed = true;
+    dispatcher.pause();
+  }
+  if (msg.author.id == creatorId && command == "r") {
+    buzzed = false;
+    dispatcher.resume();
   }
   msg.delete();
 });
 
 function muteAll(voiceChannel) {
-  voiceChannel.members.forEach(member => {
-    if (member.id != creatorId && !member.user.bot) member.voice.setMute(true);
+  voiceChannel.members.forEach((member) => {
+    try {
+      if (member.id != creatorId && !member.user.bot)
+        member.voice.setMute(true);
+    } catch (e) {
+      console.log("Problem with ", member.username);
+    }
   });
 }
 
 function unmuteAll(voiceChannel) {
-  voiceChannel.members.forEach(member => {
-    if (member.id != creatorId) member.voice.setMute(false);
+  voiceChannel.members.forEach((member) => {
+    try {
+      if (member.id != creatorId) member.voice.setMute(false);
+    } catch (e) {
+      console.log("Problem with ", member.username);
+    }
   });
 }
 
