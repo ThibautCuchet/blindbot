@@ -57,6 +57,7 @@ client.on("message", (msg) => {
   }
   if (started && msg.author.id == creatorId && command == "pause") {
     started = false;
+    buzzed = true;
     if (dispatcher != null && !dispatcher.paused) dispatcher.pause();
     msg.channel.send("Pause the blind test !");
     unmuteAll(msg.member.voice.channel);
@@ -69,6 +70,7 @@ client.on("message", (msg) => {
     command == "resume"
   ) {
     started = true;
+    buzzed = false;
     dispatcher.resume();
     msg.channel.send("Resume !");
     muteAll(msg.member.voice.channel);
