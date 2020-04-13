@@ -34,7 +34,7 @@ client.on("message", (msg) => {
     msg.channel.send(`<@${buzzedUser.id}> it's your turn`);
     msg.member.voice.setMute(false);
   }
-  if (started && buzzed && msg.author.id == creatorId && command == "v") {
+  if (started && buzzed && msg.author.id == creatorId && command == "t") {
     buzzed = false;
     buzzedUser.voice.setMute(true);
   }
