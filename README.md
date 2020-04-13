@@ -9,7 +9,8 @@ To make the bot working you have to create your own bot on Discord.
   4. Go on "Bot" menu and click on "Add Bot"
   5. Copy bot token
   6. Clone this repository and create a new file : "config.json"
-  7. Fill like this :
+  7. Open terminal in the app folder and run ```npm install```
+  8. Fill like this :
 ```json
   {
     "creatorId": "xxxxxxxxxxx",
@@ -18,6 +19,7 @@ To make the bot working you have to create your own bot on Discord.
     "rounds": {}
   }
 ```
+  9. To run the bot run ```npm start``` in a terminal
 creatorId is the blind test master id, the app uses id to limit some commands to the master.
 To get a Discord id you can go to [Help section](#help).
 
@@ -26,7 +28,7 @@ prefix is a caracter or a word who have to write before command to trigger the b
 token is the bot token that you get at point 5.
 
 rounds will be a list of rounds for the blind test.
-See Rounds sections for more informations.
+Look at [Rounds sections](#rounds) for more informations.
 
 ## Rounds
 The bot works with rounds, you can add as many rounds as you want.
